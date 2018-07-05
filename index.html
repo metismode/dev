@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <meta name="author" content="Aurelio De Rosa">
+      <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+    <title>Dev!</title>
+      
+   </head>
+   <body>
+     
+      <div class="container">
+
+        <h1>Acceleration</h1>
+        </br>
+        <label>X : </label>
+            <span  id="acceleration-x">null</span></br>
+        <label>Y : </label>
+            <span  id="acceleration-y">null</span></br>
+        <label>Z : </label>
+            <span  id="acceleration-z">null</span></br>
+        </br>
+            <button type="button" id="btnStart" class="btn btn-primary">Start</button>
+            <button type="button" id="btnStop" class="btn btn-danger">Stop</button>
+        </br>
+    </br>
+        <div id="logLayout">
+            <label>Max X : </label>
+                <span  id="max-x">?</span></br>
+            <label>Max Y : </label>
+                <span  id="max-y">?</span></br>
+            <label>Max Z : </label>
+                <span  id="max-z">?</span></br>
+
+            <label>Log acceleration </label>
+        
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">X</th>
+                    <th scope="col">Y</th>
+                    <th scope="col">Z</th>
+                  </tr>
+                </thead>
+                <tbody id="log">
+                
+                </tbody>
+              </table>
+
+        </div>
+        
+
+    </div>
+
+        
+ 
+    <script>
+            
+            window.addEventListener('devicemotion', function(event) {
+                    document.getElementById('acceleration-x').innerHTML = Math.round(event.acceleration.x);
+                    document.getElementById('acceleration-y').innerHTML = Math.round(event.acceleration.y);
+                    document.getElementById('acceleration-z').innerHTML = Math.round(event.acceleration.z);
+            });
+
+        var current = 0;
+        var max = 100;
+        var x = [];
+        var y = [];
+        var z = [];
+        var activate = false;
+        var f = function(e){
+    
+            if(current<max){
+                x.push(Math.round(event.acceleration.x));
+                y.push(Math.round(event.acceleration.y));
+                z.push(Math.round(event.acceleration.z));
+                prependLog(Math.round(event.acceleration.x),Math.round(event.acceleration.y),Math.round(event.acceleration.z));
+            }else{
+                document.getElementById('max-x').innerHTML = Math.max.apply(Math,x);
+                document.getElementById('max-y').innerHTML = Math.max.apply(Math,y);
+                document.getElementById('max-z').innerHTML = Math.max.apply(Math,z);
+            }
+        }
+
+        $("#logLayout").hide();
+
+        $("#btnStart").click(function() {
+
+            if(current>max){
+                clearLog();
+            }
+            acceleration()
+            $("#logLayout").show();
+        });
+
+        $("#btnStop").click(function() {
+            clearLog();
+            $("#logLayout").hide();
+        });
+
+
+        function prependLog(x,y,z){
+            current++;
+            $("#log").prepend( "<tr><td>"+current+"</td><td>"+x+"</td><td>"+y+"</td><td>"+z+"</td></tr>" );
+        }
+
+        function clearLog(){
+
+            $("#max-x").text("?");
+            $("#max-y").text("?");
+            $("#max-z").text("?");
+            current=0;
+            x = [];
+            y = [];
+            z = [];
+            $("#log").empty();
+            window.removeEventListener("devicemotion", f, false);   
+        }
+        
+        function acceleration(){
+            window.addEventListener('devicemotion', f);
+        }
+    
+    </script>
+   </body>
+</html>
